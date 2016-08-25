@@ -8,6 +8,9 @@ export default class Track extends React.Component {
   constructor(props) {
     super(props);
     this.startRoll = this.startRoll.bind(this);
+    var t = this;
+    this.roll = function () { t.props.onRoll(null); }
+    this.rollStrike = function () { t.props.onRoll(10); }
   }
 
   startRoll() {
@@ -19,8 +22,64 @@ export default class Track extends React.Component {
     setTimeout(function() {
       t._ball.classList.remove('roll');
       t.props.onRoll();
-    },1000);
+    }, 1000);
 
+    // show bang
+    setTimeout(function() {
+      t._bang.classList.add('visible');
+    }, 700);
+
+    // hide bang
+    setTimeout(function() {
+      t._bang.classList.remove('visible');
+    }, 1500);
+  }
+
+  renderPins(count) {
+
+    var pins = [];
+
+    //count = count || 8;
+
+    var spaces = new Array(10);
+    var empty = 10 - count;
+
+    while (empty > 0)
+    {
+      var spaceIndex = Math.round(Math.random()*100)%10; // 9 round could be range from 0-9
+
+      if (spaces[spaceIndex]!=true)
+      {
+        spaces[spaceIndex] = true;
+        empty--;
+      }
+    }
+
+    var width = 150;
+    var dx = 25;
+    var dy = 20;
+    var y = 40;
+    var x = 20;
+
+    var inRow = 4;
+    var pinIndex = -1;
+    for (var i = 0; i < 10; i++) {
+      x = (width/2) - ((inRow * dx)/2) - dx;
+      for (var j = 0; j < inRow; j++) {
+        pinIndex++;
+        x += dx;
+        pins.push(<div className="pin" key={pinIndex} style={{top:y, left:x}}>
+          {
+            spaces[pinIndex]!=true &&
+            <i></i>
+          }
+        </div>);
+      }
+      inRow --;
+      y += dy;
+    }
+
+    return pins;
   }
 
   render() {
@@ -30,15 +89,22 @@ export default class Track extends React.Component {
     for (var i=0;i<10;i++) frames[i] = i;
 
     var lastFrame = gameLastFrame(track.frames);
+    var pinsOnField = 10;
+
+    if (lastFrame && !lastFrame.strike && lastFrame.second==null)
+      pinsOnField = 10 - lastFrame.first;
 
     return (
-      <div>
+      <div className="game">
         <div className="track">
+          {this.renderPins(pinsOnField)}
           {/*<div className="pin"></div>*/}
 
           <div className="ball"
                ref={(c) => this._ball = c}
                onClick={this.startRoll}></div>
+
+          <div className="bang" ref={(c) => this._bang = c}></div>
         </div>
         <div className="trackScoreTable">
           {
@@ -56,14 +122,19 @@ export default class Track extends React.Component {
           }
         </div>
 
+        { !track.isOver &&
+          <div>
+            <button onClick={this.roll}>TEST ROLL</button>
+            <button onClick={this.rollStrike}>TEST ROLL X</button>
+            <span>Animated play works by clicking on Ball...</span>
+          </div>
+        }
+
         { track.isOver &&
         <div>
-          <div>GAME OVER</div>
           <button onClick={this.props.onRestart}>RESTART</button>
+          <div className="gameOver">GAME OVER</div>
         </div>
-        }
-        { !track.isOver &&
-          <button onClick={this.props.onRoll}>ROLL</button>
         }
       </div>
     )

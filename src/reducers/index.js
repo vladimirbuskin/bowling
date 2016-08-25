@@ -26,7 +26,7 @@ var initialState = {
 export default function counter(state = initialState, action) {
   switch (action.type) {
     case 'ROLL':
-      return roll(state);
+      return roll(state, action.count);
     case 'RESTART':
       return {...initialState};
     default:
@@ -126,7 +126,7 @@ function frameScore(frames, i) {
 }
 
 function getRundomRollValue(range) {
-  return Math.round(Math.random() * range * 3 /*3 times bigger possibility*/);
+  return Math.round(Math.random() * range /*3 times bigger possibility*/);
 }
 
 export function roll(state, value)
@@ -138,7 +138,7 @@ export function roll(state, value)
 
   // last frame
   var lastFrame = gameLastFrame(ns.frames);
-  value = getRundomRollValue(10 - (lastFrame!=null ? lastFrame.first : 0));
+  value = value!=null ? value : getRundomRollValue(10 - (lastFrame!=null ? lastFrame.first : 0));
 
   // если конец
   if (!gameIsOver(state.frames))

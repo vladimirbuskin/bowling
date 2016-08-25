@@ -5,6 +5,8 @@ import { applyMiddleware, createStore } from 'redux'
 import bowlingApp from './reducers'
 import App from './components/App'
 
+import './styles.css'
+
 let store = createStore(bowlingApp, window.devToolsExtension && window.devToolsExtension());
 
 

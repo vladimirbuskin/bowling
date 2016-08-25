@@ -1,10 +1,4 @@
-# Shapes
-Shapes test
+# Bowling
 
-
-For regular browsers - JS (24Kb)
-<a href="https://vladimirbuskin.github.io/shapes/demo/">https://vladimirbuskin.github.io/shapes/demo/</a>
-
-
-For IE with babel-polyfill - JS (109Kb)
-<a href="https://vladimirbuskin.github.io/shapes/demoIE/">https://vladimirbuskin.github.io/shapes/demoIE/</a>
+Demo, (checked in chrome, todo: check for other browsers, polyfill required for others)
+<a href="https://vladimirbuskin.github.io/bowling/demo/">https://vladimirbuskin.github.io/bowling/demo/</a>

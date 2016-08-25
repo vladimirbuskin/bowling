@@ -30,6 +30,7 @@ module.exports = {
   module: {
     loaders: [
       { test: /\.css$/, loader: 'style-loader!css-loader' },
+      { test: /\.png$/,  loader: 'file-loader?minetype=image/png' },
       { test: /\.js$/, loaders: ['babel'], exclude: /node_modules/ }
     ]
   }

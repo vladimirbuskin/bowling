@@ -17,7 +17,7 @@ class App extends React.Component {
           this.props.tracks.map((t,i) => (
             <Track key={i}
                    track={t}
-                   onRoll={() => {this.props.roll()}}
+                   onRoll={this.props.roll}
                    onRestart={() => {this.props.restart()}}
             />
           ))
@@ -32,9 +32,10 @@ var AppVisible = connect(
     tracks: [state]
   }),
   {
-    roll: function() {
+    roll: function(count) {
       return {
-        type: "ROLL"
+        type: "ROLL",
+        count: count
       }
     },
     restart: function() {
