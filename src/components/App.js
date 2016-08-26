@@ -1,7 +1,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import Track from './Track'
-
+import {
+  roll,
+  addPlayer,
+  removePlayer,
+  changePlayer,
+  restart
+} from '../actions/gameActions'
 
 class App extends React.Component {
 
@@ -32,34 +38,11 @@ var AppVisible = connect(
     game: state
   }),
   {
-    roll: function(count) {
-      return {
-        type: "ROLL",
-        count: count
-      }
-    },
-    restart: function() {
-      return {
-        type: "RESTART"
-      }
-    },
-    addPlayer: function() {
-      return {
-        type: "ADD_PLAYER"
-      }
-    },
-    removePlayer: function() {
-      return {
-        type: "REMOVE_PLAYER"
-      }
-    },
-    changePlayer: function(index, name) {
-      return {
-        type: "CHANGE_PLAYER",
-        index,
-        name
-      }
-    }
+    roll,
+    addPlayer,
+    removePlayer,
+    changePlayer,
+    restart
   }
 )(App);
 

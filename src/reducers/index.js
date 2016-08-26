@@ -52,10 +52,15 @@ export default function counter(state = initialState, action) {
         ]
       };
     case 'REMOVE_PLAYER':
+
+      // validate
+      var cnt = state.players.length - 1;
+      if (cnt<1) cnt = 1;
+
       return {
         ...initialState,
         players: [
-          ...state.players.slice(0, state.players.length - 1),
+          ...state.players.slice(0, cnt),
         ]
       };
     case 'CHANGE_PLAYER':
