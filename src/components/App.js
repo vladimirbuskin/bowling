@@ -22,7 +22,7 @@ class App extends React.Component {
         {
           <Track game={this.props.game}
                  onRoll={this.props.roll}
-                 onRestart={() => {this.props.restart()}}
+                 onRestart={this.props.restart}
                  onAddPlayer={this.props.addPlayer}
                  onRemovePlayer={this.props.removePlayer}
                  onChangePlayer={this.props.changePlayer}

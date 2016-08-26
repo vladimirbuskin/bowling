@@ -9,8 +9,31 @@ export default class Track extends React.Component {
     super(props);
     this.startRoll = this.startRoll.bind(this);
     var t = this;
-    this.roll = function () { t.props.onRoll(null); }
-    this.rollStrike = function () { t.props.onRoll(10); }
+    this.roll = function () { t.props.onRoll(null) };
+    this.rollStrike = function () { t.props.onRoll(10) };
+  }
+
+  componentDidUpdate() {
+    this.animatePins();
+  }
+
+  componentDidMount() {
+    this.animatePins();
+  }
+
+  animatePins() {
+    var pins = document.getElementsByClassName('pinImg');
+    for (var i = 0; i < pins.length; i++) {
+      var pin = pins[i];
+      pin.classList.remove('stand');
+    }
+    setTimeout(function() {
+      var pins = document.getElementsByClassName('pinImg');
+      for (var i = 0; i < pins.length; i++) {
+        var pin = pins[i];
+        pin.classList.add('stand');
+      }
+    },500);
   }
 
   startRoll() {
@@ -34,6 +57,8 @@ export default class Track extends React.Component {
       t._bang.classList.remove('visible');
     }, 1500);
   }
+
+
 
   renderPins(count) {
 
@@ -71,7 +96,7 @@ export default class Track extends React.Component {
         pins.push(<div className="pin" key={pinIndex} style={{top:y, left:x}}>
           {
             spaces[pinIndex]!=true &&
-            <i></i>
+            <i className="pinImg"></i>
           }
         </div>);
       }
