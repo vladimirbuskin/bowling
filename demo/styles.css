@@ -56,13 +56,20 @@ body {
     position: absolute;
 }
 .pin i {
-bottom: 4px;
-left: 0px;
-width: 25px;
-height: 55px;
-background-size: cover;
-background-image: url("../img/pin2.png");
-position: absolute;
+    bottom: 54px;
+    left: 0px;
+    width: 25px;
+    height: 55px;
+    background-size: cover;
+    background-image: url("../img/pin2.png");
+    position: absolute;
+    visibility: hidden;
+}
+.pin i.stand {
+    visibility: visible;
+    bottom: 4px;
+    transition-duration: 1s;
+    transition-property: bottom;
 }
 
 .trackScoreTable {
