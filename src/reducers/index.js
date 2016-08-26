@@ -11,7 +11,7 @@ var initialState = {
 
   isOver: false,
 
-  score: 0,
+  rollIndex: 0,
 
   activePlayerIndex: 0,
 
@@ -250,7 +250,7 @@ export function roll(state, value) {
       totalScore += fs;
     }
 
-    ns.score = totalScore;
+    ns.rollIndex++;
     ns.isStart = false;
 
     // change player

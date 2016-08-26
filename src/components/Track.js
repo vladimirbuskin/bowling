@@ -13,8 +13,9 @@ export default class Track extends React.Component {
     this.rollStrike = function () { t.props.onRoll(10) };
   }
 
-  componentDidUpdate() {
-    this.animatePins();
+  componentDidUpdate(prevProps) {
+    if (prevProps.game.rollIndex != this.props.game.rollIndex)
+      this.animatePins();
   }
 
   componentDidMount() {
