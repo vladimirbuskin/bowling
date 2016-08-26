@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { gameLastFrame } from '../reducers/index'
+import { gameLastFrame, gameCurrentPlayerFrames, gameCurrentPlayer } from '../reducers/index'
 
 
 export default class Track extends React.Component {
@@ -83,12 +83,14 @@ export default class Track extends React.Component {
   }
 
   render() {
-    var track = this.props.track;
-    var score = 0;
+    var t = this;
+    var game = this.props.game;
     var frames = [];
     for (var i=0;i<10;i++) frames[i] = i;
 
-    var lastFrame = gameLastFrame(track.frames);
+    // could be null
+    var lastFrame = gameLastFrame(gameCurrentPlayerFrames(game));
+
     var pinsOnField = 10;
 
     if (lastFrame && !lastFrame.strike && lastFrame.second==null)
@@ -98,7 +100,6 @@ export default class Track extends React.Component {
       <div className="game">
         <div className="track">
           {this.renderPins(pinsOnField)}
-          {/*<div className="pin"></div>*/}
 
           <div className="ball"
                ref={(c) => this._ball = c}
@@ -106,23 +107,44 @@ export default class Track extends React.Component {
 
           <div className="bang" ref={(c) => this._bang = c}></div>
         </div>
-        <div className="trackScoreTable">
-          {
-            frames.map(i => {
-              var f = track.frames[i];
-              score += f==null ? 0 : (f.score || 0);
-              return (
-                <div className="frame" key={i}>
-                  <div className="first">{ f && (f.strike ? 'X' : f.first) }</div>
-                  <div className="second">{ f && (f.strike ? '' : (f.spare ? '/' : f.second)) }</div>
-                  <div className="score">{ f && f.score!=null && (score)}</div>
-                </div>
-              )
-            })
-          }
-        </div>
 
-        { !track.isOver &&
+        {
+          this.props.game.players.map((p,i) => {
+            var score = 0;
+            return (
+            <div className="trackScoreTable" key={i}>
+              <div className="playerName">
+                { game.isStart &&
+                  <input value={p.name} onChange={(event) => { t.props.onChangePlayer(i, event.target.value) }} />
+                }
+                { !game.isStart && p.name }
+              </div>
+              {
+                frames.map(i => {
+                  var f = p.frames[i];
+                  score += f == null ? 0 : (f.score || 0);
+                  return (
+                    <div className="frame" key={i}>
+                      <div className="first">{ f && (f.strike ? 'X' : f.first) }</div>
+                      <div className="second">{ f && (f.strike ? '' : (f.spare ? '/' : f.second)) }</div>
+                      <div className="score">{ f && f.score != null && (score)}</div>
+                    </div>
+                  )
+                })
+              }
+            </div>)
+          })
+        }
+
+
+        { game.isStart &&
+        <div style={{marginBottom: '1em'}}>
+          <button onClick={this.props.onAddPlayer}>Add Player</button>
+          <button onClick={this.props.onRemovePlayer}>Remove Player</button>
+        </div>
+        }
+
+        { !game.isOver &&
           <div>
             <button onClick={this.roll}>TEST ROLL</button>
             <button onClick={this.rollStrike}>TEST ROLL X</button>
@@ -130,11 +152,11 @@ export default class Track extends React.Component {
           </div>
         }
 
-        { track.isOver &&
-        <div>
-          <button onClick={this.props.onRestart}>RESTART</button>
-          <div className="gameOver">GAME OVER</div>
-        </div>
+        { game.isOver &&
+          <div>
+            <button onClick={this.props.onRestart}>RESTART</button>
+            <div className="gameOver">GAME OVER</div>
+          </div>
         }
       </div>
     )

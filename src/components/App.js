@@ -14,13 +14,13 @@ class App extends React.Component {
     return (
       <div>
         {
-          this.props.tracks.map((t,i) => (
-            <Track key={i}
-                   track={t}
-                   onRoll={this.props.roll}
-                   onRestart={() => {this.props.restart()}}
-            />
-          ))
+          <Track game={this.props.game}
+                 onRoll={this.props.roll}
+                 onRestart={() => {this.props.restart()}}
+                 onAddPlayer={this.props.addPlayer}
+                 onRemovePlayer={this.props.removePlayer}
+                 onChangePlayer={this.props.changePlayer}
+          />
         }
       </div>
     )
@@ -29,7 +29,7 @@ class App extends React.Component {
 
 var AppVisible = connect(
   state => ({
-    tracks: [state]
+    game: state
   }),
   {
     roll: function(count) {
@@ -41,6 +41,23 @@ var AppVisible = connect(
     restart: function() {
       return {
         type: "RESTART"
+      }
+    },
+    addPlayer: function() {
+      return {
+        type: "ADD_PLAYER"
+      }
+    },
+    removePlayer: function() {
+      return {
+        type: "REMOVE_PLAYER"
+      }
+    },
+    changePlayer: function(index, name) {
+      return {
+        type: "CHANGE_PLAYER",
+        index,
+        name
       }
     }
   }

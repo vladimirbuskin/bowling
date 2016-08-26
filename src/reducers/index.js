@@ -3,23 +3,39 @@
 // export default combineReducers({
 //
 // });
+//var _ = require('lodash');
 
 var initialState = {
 
+  isStart: true,
+
   isOver: false,
+
   score: 0,
 
-  frames: [
-    // {
-    //   first: 10,
-    //   second: null,
-    //   strike: true,
-    //   spare: false,
-    //   score: 30
-    // }
+  activePlayerIndex: 0,
+
+  players: [
+    {
+      name:'player',
+      frames: [
+        // {
+        //   first: 10,
+        //   second: null,
+        //   strike: true,
+        //   spare: false,
+        //   score: 30
+        // }
+      ]
+    }
   ]
 
 };
+
+var initialPlayer = {
+  name: 'player',
+  frames: []
+}
 
 
 
@@ -27,6 +43,30 @@ export default function counter(state = initialState, action) {
   switch (action.type) {
     case 'ROLL':
       return roll(state, action.count);
+    case 'ADD_PLAYER':
+      return {
+        ...initialState,
+        players: [
+          ...state.players,
+          {...initialPlayer}
+        ]
+      };
+    case 'REMOVE_PLAYER':
+      return {
+        ...initialState,
+        players: [
+          ...state.players.slice(0, state.players.length - 1),
+        ]
+      };
+    case 'CHANGE_PLAYER':
+      return {
+        ...initialState,
+        players: [
+          ...state.players.slice(0, action.index),
+          {...state.players[action.index], name: action.name},
+          ...state.players.slice(action.index+1)
+        ]
+      };
     case 'RESTART':
       return {...initialState};
     default:
@@ -34,8 +74,7 @@ export default function counter(state = initialState, action) {
   }
 }
 
-function frameIsDone(frame)
-{
+function frameIsDone(frame) {
   return frameIsStrike(frame) || frame.second != null
 }
 
@@ -53,8 +92,7 @@ export function gameLastFrame(frames) {
   return frames[frames.length-1];
 }
 
-function gameIsOver(frames)
-{
+function gameIsOver(frames) {
   // если 10
   // if 10 strike then 2 more
   // if 10 spare then 1 more
@@ -129,23 +167,32 @@ function getRundomRollValue(range) {
   return Math.round(Math.random() * range /*3 times bigger possibility*/);
 }
 
-export function roll(state, value)
-{
+export function gameCurrentPlayer(game) {
+  return game.players[game.activePlayerIndex];
+}
+
+export function gameCurrentPlayerFrames(game) {
+  return (gameCurrentPlayer(game) || {}).frames || [];
+}
+
+export function roll(state, value) {
+
   var ns = {
-    ...state,
-    frames: [...state.frames]
+    ...state
   };
 
+  var player = gameCurrentPlayer(ns);
+
+  var frames = player.frames = [...player.frames];
+
   // last frame
-  var lastFrame = gameLastFrame(ns.frames);
+  var lastFrame = gameLastFrame(frames);
   value = value!=null ? value : getRundomRollValue(10 - (lastFrame!=null ? lastFrame.first : 0));
 
-  // если конец
-  if (!gameIsOver(state.frames))
+  // is over
+  if (!gameIsOver(frames))
   {
-    ns.frames = [...state.frames];
-
-    lastFrame = gameLastFrame(ns.frames);
+    lastFrame = gameLastFrame(frames);
     if (lastFrame == null || frameIsDone(lastFrame))
     {
       if (value > 10)
@@ -155,7 +202,7 @@ export function roll(state, value)
 
       // we adds another frame
       lastFrame = {first: value };
-      ns.frames.push(lastFrame);
+      frames.push(lastFrame);
     }
     else
     {
@@ -167,7 +214,7 @@ export function roll(state, value)
         lastFrame.second = 10 - lastFrame.first;
 
       // set
-      ns.frames[ns.frames.length-1] = lastFrame;
+      frames[frames.length-1] = lastFrame;
     }
 
     // set flags
@@ -177,19 +224,20 @@ export function roll(state, value)
     if (frameIsSpare(lastFrame))
       lastFrame.spare = true;
 
-    if (gameIsOver(ns.frames))
+    // player game is over and this is the last player
+    if (gameIsOver(frames) && ns.players.length == ns.activePlayerIndex+1)
       ns.isOver = true;
 
     // score
     var totalScore = 0;
-    for (var i = 0; i < ns.frames.length; i++)
+    for (var i = 0; i < frames.length; i++)
     {
-      var curFrame = ns.frames[i];
-      var fs = frameScore(ns.frames, i);
+      var curFrame = frames[i];
+      var fs = frameScore(frames, i);
       // set frame score
       if (fs != null && curFrame.score == null)
       {
-        ns.frames[i] = curFrame = {
+        frames[i] = curFrame = {
           ...curFrame,
           score: fs
         };
@@ -198,6 +246,15 @@ export function roll(state, value)
     }
 
     ns.score = totalScore;
+    ns.isStart = false;
+
+    // change player
+    if (lastFrame.strike || lastFrame.second!=null)
+    {
+      ns.activePlayerIndex++;
+      // move index to next player
+      ns.activePlayerIndex = ns.activePlayerIndex % ns.players.length;
+    }
   }
   return ns;
 }
